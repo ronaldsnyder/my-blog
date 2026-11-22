@@ -43,11 +43,11 @@ Topics live in `src/consts.ts`. Colors, fonts, and spacing are CSS variables at 
 ## Deploying (one-time setup)
 
 1. Push the code to GitHub (repo: `my-blog`). If git rejects your password, run `gh auth login` or use a personal access token — GitHub no longer accepts account passwords for git.
-2. **Cloudflare Pages:** in the Cloudflare dashboard, Workers & Pages → Create → Pages → Connect to Git. When GitHub asks, install the Cloudflare app on your **personal** account with **Only select repositories → `my-blog`**. Build settings:
-   - Framework preset: **Astro**
+2. **Cloudflare:** in the dashboard, Workers & Pages → Create application → import the `my-blog` repo. When GitHub asks, install the Cloudflare app on your **personal** account with **Only select repositories → `my-blog`**. Settings:
+   - Project name: `my-blog` (must match `name` in `wrangler.jsonc`)
    - Build command: `npm run build`
-   - Build output directory: `dist`
-   - Node version comes from `.node-version` (22). If the build complains, add an environment variable `NODE_VERSION` = `22`.
+   - Deploy command: `npx wrangler deploy` (serves `dist/` as static files, per `wrangler.jsonc`)
+   - Node version comes from `.node-version` (22).
 3. **Domain:** in the Pages project, Custom domains → Set up a domain → `ronaldsnyder.net` (and `www.ronaldsnyder.net`). Easiest if the domain's DNS is on Cloudflare; otherwise follow the DNS records it shows you at your registrar. HTTPS is automatic.
 4. **Pages CMS:** sign in at https://app.pagescms.org with GitHub and give it access to `my-blog` only. It reads `.pages.yml`.
 

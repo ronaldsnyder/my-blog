@@ -1,6 +1,6 @@
 # ronaldsnyder.net
 
-My personal blog: cooking, travel, learning, and life. Built with [Astro](https://astro.build), edited with [Pages CMS](https://pagescms.org), hosted on Netlify.
+My personal blog: cooking, travel, learning, and life. Built with [Astro](https://astro.build), edited with [Pages CMS](https://pagescms.org), hosted on [Cloudflare Pages](https://pages.cloudflare.com) (free plan: 500 builds/month, unlimited bandwidth).
 
 ## Run it locally
 
@@ -15,7 +15,7 @@ npm run preview    # serve the production build
 
 ## Writing a post
 
-**In the browser or on your phone (Pages CMS):** sign in at https://app.pagescms.org with GitHub, open this repo, and go to **Posts**. Fill in the fields, drop in photos, and save. Saving commits to GitHub, and Netlify rebuilds the site in about a minute. New posts start as drafts, so untick **Draft** when the post is ready to go live.
+**In the browser or on your phone (Pages CMS):** sign in at https://app.pagescms.org with GitHub, open this repo, and go to **Posts**. Fill in the fields, drop in photos, and save. Saving commits to GitHub, and Cloudflare rebuilds the site in about a minute. New posts start as drafts, so untick **Draft** when the post is ready to go live.
 
 **In VS Code:** add a Markdown file to `src/content/posts/`. The file name becomes the URL (`my-post.md` → `/posts/my-post/`). Put photos in `src/assets/images/` and reference them as `../../assets/images/photo.jpg`. Use `recipe-template.md` and `trip-template.md` as starting points.
 
@@ -42,16 +42,16 @@ Topics live in `src/consts.ts`. Colors, fonts, and spacing are CSS variables at 
 
 ## Deploying (one-time setup)
 
-1. Create an empty GitHub repo (e.g. `ronaldsnyder-blog`), then:
-   ```sh
-   git init && git add . && git commit -m "Initial blog"
-   git branch -M main
-   git remote add origin git@github.com:<you>/ronaldsnyder-blog.git
-   git push -u origin main
-   ```
-2. **Netlify:** Add new site → Import from Git → pick the repo. The build settings come from `netlify.toml`.
-3. **Domain:** in Netlify, Domain management → add `ronaldsnyder.net`, then update DNS at your registrar as Netlify instructs. HTTPS is automatic.
-4. **Pages CMS:** sign in at https://app.pagescms.org with GitHub and grant it access to the repo. It reads `.pages.yml`.
+1. Push the code to GitHub (repo: `my-blog`). If git rejects your password, run `gh auth login` or use a personal access token — GitHub no longer accepts account passwords for git.
+2. **Cloudflare Pages:** in the Cloudflare dashboard, Workers & Pages → Create → Pages → Connect to Git. When GitHub asks, install the Cloudflare app on your **personal** account with **Only select repositories → `my-blog`**. Build settings:
+   - Framework preset: **Astro**
+   - Build command: `npm run build`
+   - Build output directory: `dist`
+   - Node version comes from `.node-version` (22). If the build complains, add an environment variable `NODE_VERSION` = `22`.
+3. **Domain:** in the Pages project, Custom domains → Set up a domain → `ronaldsnyder.net` (and `www.ronaldsnyder.net`). Easiest if the domain's DNS is on Cloudflare; otherwise follow the DNS records it shows you at your registrar. HTTPS is automatic.
+4. **Pages CMS:** sign in at https://app.pagescms.org with GitHub and give it access to `my-blog` only. It reads `.pages.yml`.
+
+Every push to `main` (including saves in Pages CMS) triggers a rebuild. The free plan allows 500 builds a month.
 
 ## Maintenance
 

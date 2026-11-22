@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { TOPICS } from '../../consts';
+import { getPosts } from '../../utils';
+
+export function getStaticPaths() {
+  return TOPICS.map((t) => ({ params: { topic: t.slug }, props: { topic: t } }));
+}
+
+const { topic } = Astro.props;
+const posts = (await getPosts()).filter((p) => p.data.topic === topic.name);
+---
+
+<BaseLayout title={topic.name} description={topic.blurb}>
+  <div class="container">
+    <header class="topic-head" style={`background:${topic.tint}`}>
+      <span class="tag">Topic</span>
+      <h1>{topic.name}</h1>
+      <p>{topic.blurb}</p>
+    </header>
+
+    {
+      posts.length > 0 ? (
+        <div class="grid-cards">
+          {posts.map((post) => <PostCard post={post} />)}
+        </div>
+      ) : (
+        <p class="empty">Nothing here yet. Check back soon.</p>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .topic-head { margin: 48px 0 56px; padding: 56px 48px; border-radius: 24px; display: flex; flex-direction: column; gap: 12px; }
+  .topic-head h1 { font-size: clamp(40px, 6vw, 64px); line-height: 1; }
+  .topic-head p { margin: 0; font-size: 18px; color: var(--muted); }
+  .empty { font-size: 18px; color: var(--muted); }
+  @media (max-width: 640px) { .topic-head { padding: 40px 24px; } }
+</style>

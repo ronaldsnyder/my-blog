@@ -1,0 +1,41 @@
+---
+import { SITE, TOPICS } from '../consts';
+const path = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="container inner">
+    <a href="/" class="wordmark">{SITE.title}</a>
+    <nav aria-label="Main">
+      {TOPICS.map((t) => (
+        <a href={`/topics/${t.slug}/`} aria-current={path.startsWith(`/topics/${t.slug}`) ? 'page' : undefined}>
+          {t.name}
+        </a>
+      ))}
+      <a href="/about/" aria-current={path.startsWith('/about') ? 'page' : undefined}>About</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header { border-bottom: 1px solid var(--border); }
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 24px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  nav { display: flex; flex-wrap: wrap; gap: 4px 24px; font-size: 15px; font-weight: 500; }
+  nav a { color: var(--text); padding: 10px 0; }
+  nav a:hover, nav a[aria-current='page'] { color: var(--accent); }
+</style>

@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts, collectTags } from '../../utils';
+
+const tags = collectTags(await getPosts());
+---
+
+<BaseLayout title="All tags" description="Every tag on the blog.">
+  <div class="container">
+    <header class="tags-head">
+      <h1>All tags</h1>
+    </header>
+    {
+      tags.length > 0 ? (
+        <ul class="cloud">
+          {tags.map((t) => (
+            <li>
+              <a href={`/tags/${t.slug}/`}>
+                #{t.name} <span class="n">{t.posts.length}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="empty">No tags yet.</p>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .tags-head { padding: 56px 0 40px; }
+  .tags-head h1 { font-size: clamp(40px, 6vw, 60px); line-height: 1; }
+  .cloud { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px; }
+  .cloud a {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 18px;
+    border: 1px solid var(--border); border-radius: 999px; font-size: 16px; font-weight: 500; color: var(--text);
+  }
+  .cloud a:hover { border-color: var(--accent); color: var(--text); }
+  .n { font-size: 13px; color: var(--dim); }
+  .empty { font-size: 18px; color: var(--muted); }
+</style>

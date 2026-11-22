@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found">
+  <div class="nf">
+    <h1>Page not found</h1>
+    <p>That page doesn't exist, or it moved.</p>
+    <a class="button" href="/">Back to the home page</a>
+  </div>
+</BaseLayout>
+
+<style>
+  .nf { max-width: 680px; margin: 0 auto; padding: 120px 32px 40px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .nf h1 { font-size: 48px; }
+  .nf p { margin: 0; color: var(--muted); font-size: 18px; }
+</style>

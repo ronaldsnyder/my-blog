@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About" description="A little about me and this blog.">
+  <div class="about">
+    <span class="tag">About</span>
+    <h1>Hi, I'm Ron.</h1>
+    <div class="prose">
+      <p>
+        I'm a software developer turned director of software development, living in Fenton, Michigan. This blog is where I
+        write about everything outside of work: what I'm cooking, where I'm traveling, what I'm learning, and whatever else is
+        going on.
+      </p>
+      <p>[Add a few more lines about yourself here — edit this in <code>src/pages/about.astro</code>.]</p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .about { max-width: 680px; margin: 0 auto; padding: 64px 32px 0; display: flex; flex-direction: column; gap: 18px; }
+  .about h1 { font-size: clamp(38px, 6vw, 56px); line-height: 1.05; }
+  @media (max-width: 640px) { .about { padding-left: 20px; padding-right: 20px; } }
+</style>

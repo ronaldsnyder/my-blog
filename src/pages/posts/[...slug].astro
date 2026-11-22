@@ -1,0 +1,155 @@
+---
+import { render } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Photo from '../../components/Photo.astro';
+import PostCard from '../../components/PostCard.astro';
+import TagList from '../../components/TagList.astro';
+import { topicFor } from '../../consts';
+import { getPosts, formatDate, readingTime, type Post } from '../../utils';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post, all: posts } }));
+}
+
+interface Props {
+  post: Post;
+  all: Post[];
+}
+
+const { post, all } = Astro.props;
+const { Content } = await render(post);
+const { title, description, date, topic, tags, cover, coverAlt, coverCaption, gallery, recipe } = post.data;
+const t = topicFor(topic);
+const more = all.filter((p) => p.data.topic === topic && p.id !== post.id).slice(0, 3);
+const ogImage = cover ? (await getImage({ src: cover, width: 1200 })).src : undefined;
+---
+
+<BaseLayout title={title} description={description} image={ogImage}>
+  <header class="post-head">
+    <a class="tag" href={`/topics/${t.slug}/`}>{topic}</a>
+    <h1>{title}</h1>
+    <p class="lede">{description}</p>
+    <p class="meta">By Ron Snyder · {formatDate(date)} · {readingTime(post.body)}</p>
+  </header>
+
+  {
+    cover && (
+      <figure class="container cover">
+        <Photo src={cover} alt={coverAlt ?? ''} height={600} radius={20} tint={t.tint} widths={[800, 1200, 1800]} sizes="(max-width: 1240px) 100vw, 1200px" loading="eager" />
+        {coverCaption && <figcaption>{coverCaption}</figcaption>}
+      </figure>
+    )
+  }
+
+  <article class="prose body">
+    <Content />
+  </article>
+
+  {
+    gallery && gallery.length > 0 && (
+      <div class="gallery">
+        {gallery.map((g) => (
+          <figure>
+            <Image src={g.image} alt={g.alt ?? g.caption ?? ''} widths={[400, 800]} sizes="(max-width: 700px) 100vw, 320px" class="g-img" />
+            {g.caption && <figcaption>{g.caption}</figcaption>}
+          </figure>
+        ))}
+      </div>
+    )
+  }
+
+  {
+    recipe && (recipe.ingredients.length > 0 || recipe.steps.length > 0) && (
+      <div class="narrow">
+        <aside class="recipe" aria-label="Recipe">
+          <div class="recipe-head">
+            <h2>The recipe</h2>
+            {(recipe.servings || recipe.time) && (
+              <span class="meta">{[recipe.servings && `Serves ${recipe.servings}`, recipe.time].filter(Boolean).join(' · ')}</span>
+            )}
+          </div>
+          <div class="recipe-cols">
+            {recipe.ingredients.length > 0 && (
+              <div class="ing">
+                <h3>Ingredients</h3>
+                <ul>{recipe.ingredients.map((i) => <li>{i}</li>)}</ul>
+              </div>
+            )}
+            {recipe.steps.length > 0 && (
+              <div class="steps">
+                <h3>Steps</h3>
+                <ol>{recipe.steps.map((s) => <li>{s}</li>)}</ol>
+              </div>
+            )}
+          </div>
+        </aside>
+      </div>
+    )
+  }
+
+  {
+    tags.length > 0 && (
+      <div class="narrow post-tags">
+        <TagList tags={tags} label="Post tags" />
+      </div>
+    )
+  }
+
+  {
+    more.length > 0 && (
+      <section class="container more" aria-labelledby="more">
+        <h2 id="more">More from {topic}</h2>
+        <div class="grid-cards">
+          {more.map((p) => <PostCard post={p} photoHeight={200} showExcerpt={false} />)}
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .post-head {
+    max-width: 760px; margin: 0 auto; padding: 64px 32px 40px;
+    text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px;
+  }
+  .post-head h1 { font-size: clamp(38px, 6vw, 60px); line-height: 1.04; letter-spacing: -0.03em; }
+  .lede { margin: 0; font-size: 20px; line-height: 1.55; color: var(--muted); }
+
+  .cover { margin-top: 0; margin-bottom: 0; }
+  figcaption { margin-top: 12px; font-size: 14px; color: var(--dim); text-align: center; }
+
+  .body { max-width: 680px; margin: 0 auto; padding: 56px 32px 0; }
+
+  .gallery {
+    max-width: 1000px; margin: 24px auto 0; padding: 0 32px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;
+  }
+  .gallery figure { margin: 0; }
+  .gallery :global(.g-img) { width: 100%; height: 260px; object-fit: cover; border-radius: 14px; }
+  .gallery figcaption { text-align: left; font-size: 13px; margin-top: 8px; }
+
+  .narrow { max-width: 680px; margin: 0 auto; padding: 48px 32px 0; }
+  .recipe { border: 1px solid var(--border); border-radius: 20px; padding: 32px; background: var(--surface); }
+  .recipe-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .recipe-head h2 { font-size: 28px; }
+  .recipe-cols { display: flex; flex-wrap: wrap; gap: 32px; }
+  .ing { flex: 1 1 220px; min-width: 0; }
+  .steps { flex: 1.4 1 260px; min-width: 0; }
+  .recipe h3 {
+    font-family: var(--font-body); font-size: 13px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+  }
+  .recipe ul, .recipe ol { margin: 0; padding-left: 20px; font-size: 16px; line-height: 1.7; color: var(--text-body); }
+  .recipe li { margin-bottom: 6px; }
+
+  .post-tags { padding-top: 40px; }
+  .more { margin-top: 96px; padding-top: 48px; border-top: 1px solid var(--border); }
+  .more h2 { font-size: 30px; margin-bottom: 28px; }
+
+  @media (max-width: 640px) {
+    .post-head, .body, .narrow, .gallery { padding-left: 20px; padding-right: 20px; }
+    .recipe { padding: 24px; }
+  }
+</style>

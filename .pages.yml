@@ -1,0 +1,94 @@
+# Pages CMS config — https://pagescms.org
+# Lets you write and publish posts (with photos) from a browser or your phone.
+media:
+  input: src/assets/images
+  output: ../../assets/images
+
+content:
+  - name: posts
+    label: Posts
+    type: collection
+    path: src/content/posts
+    filename: "{primary}.md"
+    view:
+      fields: [title, topic, date, draft]
+      primary: title
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: description
+        label: Short summary (shows on cards)
+        type: text
+        required: true
+      - name: date
+        label: Date
+        type: date
+        required: true
+      - name: topic
+        label: Topic
+        type: select
+        required: true
+        options:
+          values: [Cooking, Travel, Learning, Life]
+      - name: tags
+        label: Tags (e.g. pasta, Michigan, grilling)
+        type: string
+        list: true
+      - name: featured
+        label: Feature on the home page
+        type: boolean
+      - name: draft
+        label: Draft (not published)
+        type: boolean
+        default: true
+      - name: cover
+        label: Cover photo
+        type: image
+      - name: coverAlt
+        label: Cover photo description (for screen readers)
+        type: string
+      - name: coverCaption
+        label: Cover photo caption
+        type: string
+      - name: gallery
+        label: Photo gallery
+        type: object
+        list: true
+        fields:
+          - name: image
+            label: Photo
+            type: image
+            required: true
+          - name: caption
+            label: Caption
+            type: string
+          - name: alt
+            label: Description (for screen readers)
+            type: string
+      - name: recipe
+        label: Recipe (cooking posts only)
+        type: object
+        fields:
+          - name: servings
+            label: Servings
+            type: string
+          - name: time
+            label: Total time
+            type: string
+          - name: ingredients
+            label: Ingredients
+            type: string
+            list: true
+          - name: steps
+            label: Steps
+            type: text
+            list: true
+      - name: body
+        label: Post
+        type: rich-text

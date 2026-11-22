@@ -1,0 +1,24 @@
+---
+import { SITE } from '../consts';
+const year = new Date().getFullYear();
+---
+
+<footer class="container site-footer">
+  <span>© {year} {SITE.title} · {SITE.location}</span>
+  <span><a href="/tags/">All tags</a> · <a href="/rss.xml">RSS</a> · ronaldsnyder.net</span>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 64px;
+    padding-top: 32px;
+    padding-bottom: 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 14px;
+    color: var(--dim);
+  }
+</style>

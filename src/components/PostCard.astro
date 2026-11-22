@@ -1,0 +1,35 @@
+---
+import Photo from './Photo.astro';
+import { topicFor } from '../consts';
+import { formatDate, readingTime, type Post } from '../utils';
+
+interface Props {
+  post: Post;
+  photoHeight?: number;
+  showExcerpt?: boolean;
+}
+
+const { post, photoHeight = 240, showExcerpt = true } = Astro.props;
+const { title, description, date, topic, cover, coverAlt } = post.data;
+const href = `/posts/${post.id}/`;
+---
+
+<article class="card">
+  <a href={href} tabindex="-1" aria-hidden="true">
+    <Photo src={cover} alt={coverAlt ?? ''} height={photoHeight} tint={topicFor(topic).tint} />
+  </a>
+  <span class="tag">{topic}</span>
+  <h3><a href={href}>{title}</a></h3>
+  {showExcerpt && <p class="excerpt">{description}</p>}
+  <p class="meta">{formatDate(date)} · {readingTime(post.body)}</p>
+</article>
+
+<style>
+  .card { display: flex; flex-direction: column; gap: 12px; }
+  .tag { margin-top: 6px; }
+  h3 { font-size: 24px; line-height: 1.2; letter-spacing: -0.015em; }
+  h3 a { color: var(--text); }
+  h3 a:hover { color: var(--accent); }
+  .excerpt { margin: 0; font-size: 16px; line-height: 1.55; color: var(--muted); }
+  .meta { font-size: 13px; }
+</style>

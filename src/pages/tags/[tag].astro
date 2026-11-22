@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getPosts, collectTags, type TagInfo } from '../../utils';
+
+export async function getStaticPaths() {
+  const tags = collectTags(await getPosts());
+  return tags.map((tag) => ({ params: { tag: tag.slug }, props: { tag } }));
+}
+
+interface Props {
+  tag: TagInfo;
+}
+
+const { tag } = Astro.props;
+const count = tag.posts.length;
+---
+
+<BaseLayout title={`#${tag.name}`} description={`Posts tagged ${tag.name}.`}>
+  <div class="container">
+    <header class="tag-head">
+      <a class="tag" href="/tags/">All tags</a>
+      <h1>#{tag.name}</h1>
+      <p>{count} {count === 1 ? 'post' : 'posts'}</p>
+    </header>
+    <div class="grid-cards">
+      {tag.posts.map((post) => <PostCard post={post} />)}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .tag-head { padding: 56px 0 48px; display: flex; flex-direction: column; gap: 12px; }
+  .tag-head h1 { font-size: clamp(40px, 6vw, 60px); line-height: 1; }
+  .tag-head p { margin: 0; font-size: 16px; color: var(--muted); }
+</style>
